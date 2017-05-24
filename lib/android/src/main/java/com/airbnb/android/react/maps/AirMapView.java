@@ -44,6 +44,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.VisibleRegion;
+import com.google.android.gms.maps.model.GroundOverlayOptions;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -331,7 +333,7 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
         // add roskilde map overlay.
         GroundOverlayOptions mapOverlay = new GroundOverlayOptions()
           .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
-          .positionFromBounds(new LatLngBounds(new LatLng(55.60902308597556, 12.057436019946294), new LatLng(55.62452291455987, 12.098813659716825)))
+          .positionFromBounds(new LatLngBounds(new LatLng(55.60902308597556, 12.057436019946294), new LatLng(55.62452291455987, 12.098813659716825)));
 
         this.map.addGroundOverlay(mapOverlay);
     }
