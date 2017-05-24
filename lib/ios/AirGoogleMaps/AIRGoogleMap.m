@@ -47,9 +47,25 @@ id regionAsJSON(MKCoordinateRegion region) {
     _circles = [NSMutableArray array];
     _tiles = [NSMutableArray array];
     _initialRegionSet = false;
+
+    [self groundOverlay];
   }
   return self;
 }
+
+- (void) groundOverlay
+{
+  CLLocationCoordinate2D southWest = CLLocationCoordinate2DMake(55.60902308597556, 12.057436019946294);
+  CLLocationCoordinate2D northEast = CLLocationCoordinate2DMake(55.62452291455987, 12.098813659716825);
+  GMSCoordinateBounds *overlayBounds = [[GMSCoordinateBounds alloc] initWithCoordinate:southWest coordinate:northEast];
+
+  UIImage *icon = [UIImage imageNamed:@"map"];
+
+  GMSGroundOverlay *overlay = [GMSGroundOverlay groundOverlayWithBounds:overlayBounds icon:icon];
+  overlay.zIndex = 1000;
+  overlay.map = self;
+}
+
 - (id)eventFromCoordinate:(CLLocationCoordinate2D)coordinate {
 
   CGPoint touchPoint = [self.projection pointForCoordinate:coordinate];
