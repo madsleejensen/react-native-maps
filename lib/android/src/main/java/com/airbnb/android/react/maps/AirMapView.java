@@ -326,6 +326,14 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
       };
 
         context.addLifecycleEventListener(lifecycleListener);
+
+
+        // add roskilde map overlay.
+        GroundOverlayOptions mapOverlay = new GroundOverlayOptions()
+          .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
+          .positionFromBounds(new LatLngBounds(new LatLng(55.60902308597556, 12.057436019946294), new LatLng(55.62452291455987, 12.098813659716825)))
+
+        this.map.addGroundOverlay(mapOverlay);
     }
 
     private boolean hasPermissions() {
