@@ -329,13 +329,70 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
         context.addLifecycleEventListener(lifecycleListener);
 
+        addRoskildeGroundOverlay();
+    }
 
-        // add roskilde map overlay.
-        GroundOverlayOptions mapOverlay = new GroundOverlayOptions()
-          .image(BitmapDescriptorFactory.fromResource(R.drawable.map))
-          .positionFromBounds(new LatLngBounds(new LatLng(55.60902308597556, 12.057436019946294), new LatLng(55.62452291455987, 12.098813659716825)));
+    private void addRoskildeGroundOverlay() {
+        int[] mapResourceIds = {
+            R.drawable.map_mdpi,
+            R.drawable.map_hdpi,
+            R.drawable.map_xhdpi,
+            R.drawable.map_xxhdpi,
+        };
 
-        this.map.addGroundOverlay(mapOverlay);
+        int startIndex = (getResources().getDisplayMetrics().densityDpi / 160) - 1;
+        startIndex = Math.min(mapResourceIds.length - 1, startIndex);
+        startIndex = Math.max(0, startIndex);
+
+        for (int index = startIndex; index >= 0; index--) {
+            int mapResourceId = mapResourceIds[index];
+            Bitmap bitmap = null;
+
+            try {
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true; // we are only interrested in the meta data.
+
+                BitmapFactory.decodeResource(getResources(), mapResourceId, options);
+
+                int estimatedBitmapMemoryUsage = options.outWidth * options.outHeight * 8;
+
+                Log.e("FASTTRACK", "INDEX: " + Integer.toString(index));
+                Log.e("FASTTRACK", "Image size: " + Integer.toString(options.outWidth) + 'x' + Integer.toString(options.outHeight));
+                Log.e("FASTTRACK", "Estimated memory usage: " + Integer.toString(estimatedBitmapMemoryUsage));
+                Log.e("FASTTRACK", "System memory max: " + Long.toString(Runtime.getRuntime().maxMemory()));
+                Log.e("FASTTRACK", "System memory free: " + Long.toString(Runtime.getRuntime().freeMemory()));
+
+                // add a overhead buffer. and check if we have enought memory
+                if ((estimatedBitmapMemoryUsage * 1.2) >= Runtime.getRuntime().maxMemory()) {
+                    Log.e("FASTTRACK", "Estimated memory usage is too large, skipping this resolution");
+                    continue;
+                }
+
+                // "decode" bitmap, this sometimes causes a out-of-memory error to be thrown, given our catch phase a chance to cleanup / try a lower res bitmap.
+                bitmap = BitmapFactory.decodeResource(getResources(), mapResourceId);
+
+                // add roskilde map overlay.
+                GroundOverlayOptions mapOverlay = new GroundOverlayOptions()
+                        .image(BitmapDescriptorFactory.fromBitmap(bitmap))
+                        .positionFromBounds(new LatLngBounds(new LatLng(55.60902308597556, 12.057436019946294), new LatLng(55.62452291455987, 12.098813659716825)));
+
+                this.map.addGroundOverlay(mapOverlay);
+
+
+                Log.e("FASTTRACK", "Image loaded: " + Integer.toString(index));
+                break;
+
+            } catch (OutOfMemoryError error) {
+                Log.e("FASTTRACK", "OUT OF MEMORY");
+
+                if (bitmap != null) {
+                    bitmap.recycle();
+                    bitmap = null;
+                }
+
+                System.gc();
+            }
+        }
     }
 
     private boolean hasPermissions() {
