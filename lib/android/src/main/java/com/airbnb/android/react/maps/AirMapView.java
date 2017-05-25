@@ -334,13 +334,14 @@ public class AirMapView extends MapView implements GoogleMap.InfoWindowAdapter,
 
     private void addRoskildeGroundOverlay() {
         int[] mapResourceIds = {
+            R.drawable.map_ldpi,
             R.drawable.map_mdpi,
             R.drawable.map_hdpi,
             R.drawable.map_xhdpi,
             R.drawable.map_xxhdpi,
         };
 
-        int startIndex = (getResources().getDisplayMetrics().densityDpi / 160) - 1;
+        int startIndex = getResources().getDisplayMetrics().densityDpi / 160;
         startIndex = Math.min(mapResourceIds.length - 1, startIndex);
         startIndex = Math.max(0, startIndex);
 
